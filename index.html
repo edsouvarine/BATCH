@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BATCH — Batch Cooking Familial</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="logo">🍳 <span>BATCH</span></div>
+    <button class="nav-item active" data-page="planning" onclick="navigate(this)">
+      <span class="icon">📅</span> Planning
+    </button>
+    <button class="nav-item" data-page="recettes" onclick="navigate(this)">
+      <span class="icon">📖</span> Recettes
+    </button>
+    <button class="nav-item" data-page="courses" onclick="navigate(this)">
+      <span class="icon">🛒</span> Courses
+    </button>
+    <button class="nav-item" data-page="commander" onclick="navigate(this)">
+      <span class="icon">🏪</span> Commander
+    </button>
+    <button class="nav-item" data-page="batch" onclick="navigate(this)">
+      <span class="icon">🍳</span> Batch Lundi
+    </button>
+    <div class="sidebar-spacer"></div>
+    <div class="family-section">
+      <div class="family-title">Famille</div>
+      <div class="family-member">
+        <div class="avatar" style="background:#3b82f6">N</div> Nico
+      </div>
+      <div class="family-member">
+        <div class="avatar" style="background:#ec4899">F</div> Flo
+      </div>
+      <div class="family-member">
+        <div class="avatar" style="background:#22c55e">S</div> Sacha
+      </div>
+      <div class="family-member">
+        <div class="avatar" style="background:#f97316">V</div> Victor
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ══════════════════════════ PLANNING ══════════════════════════ -->
+    <div id="page-planning" class="page active">
+      <div class="topbar">
+        <h1>📅 Planning de la semaine</h1>
+        <div class="topbar-right">
+          <button class="btn btn-outline btn-sm" onclick="prevWeek()">← Semaine préc.</button>
+          <span id="week-label" style="font-size:14px;font-weight:600"></span>
+          <button class="btn btn-outline btn-sm" onclick="nextWeek()">Semaine suiv. →</button>
+          <button class="btn btn-primary" onclick="generateMenu()">✨ Générer avec Claude</button>
+        </div>
+      </div>
+      <div class="content">
+        <div class="week-grid" id="week-grid"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════ RECETTES ══════════════════════════ -->
+    <div id="page-recettes" class="page">
+      <div class="topbar">
+        <h1>📖 Catalogue Recettes</h1>
+        <div class="topbar-right">
+          <button class="btn btn-outline" onclick="openProposalModal()">➕ Proposer une recette</button>
+          <button class="btn btn-primary" onclick="aiDiscovery()">✨ Découverte IA</button>
+        </div>
+      </div>
+      <div class="content">
+        <div class="filters">
+          <button class="filter-btn active" onclick="filterRecipes('all', this)">Toutes</button>
+          <button class="filter-btn f-vegetal" onclick="filterRecipes('vegetal', this)">🥦 Végétal</button>
+          <button class="filter-btn f-viande" onclick="filterRecipes('viande', this)">🥩 Viande</button>
+          <button class="filter-btn f-poisson" onclick="filterRecipes('poisson', this)">🐟 Poisson</button>
+          <button class="filter-btn" onclick="filterRecipes('favoris', this)">⭐ Favoris</button>
+          <button class="filter-btn" onclick="filterRecipes('ia', this)">✨ Proposées IA</button>
+        </div>
+        <div class="recipes-grid" id="recipes-grid"></div>
+      </div>
+    </div>
+
+    <!-- ══ MODAL: PROPOSER UNE RECETTE ══ -->
+    <div class="modal-overlay" id="modal-proposal" onclick="closeModalOutside(event,'modal-proposal')">
+      <div class="modal">
+        <button class="modal-close" onclick="closeModal('modal-proposal')">✕</button>
+        <div class="modal-title">➕ Proposer une recette</div>
+        <div class="modal-sub">Décrivez votre recette — Claude génère la fiche technique complète</div>
+
+        <div class="form-group">
+          <label class="form-label">Nom de la recette *</label>
+          <input class="form-input" id="prop-name" placeholder="Ex: Gratin de courgettes au chèvre" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description / Idée (optionnel)</label>
+          <textarea class="form-input form-textarea" id="prop-desc"
+            placeholder="Quelques mots sur la recette, les ingrédients principaux, le style de cuisson..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          <div class="type-selector">
+            <button class="type-btn selected-vegetal" id="type-vegetal" onclick="selectType('vegetal')">🥦
+              Végétal</button>
+            <button class="type-btn" id="type-viande" onclick="selectType('viande')">🥩 Viande</button>
+            <button class="type-btn" id="type-poisson" onclick="selectType('poisson')">🐟 Poisson</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Saison</label>
+          <select class="form-input form-select" id="prop-saison">
+            <option value="toute">Toute l'année</option>
+            <option value="printemps">Printemps</option>
+            <option value="été">Été</option>
+            <option value="automne">Automne</option>
+            <option value="hiver">Hiver</option>
+          </select>
+        </div>
+
+        <div class="generating-bar" id="generating-bar">
+          <div class="spinner"></div>
+          <span style="font-size:13px;color:var(--purple)">Claude génère la fiche technique...</span>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:4px">
+          <button class="btn btn-outline" style="flex:1" onclick="closeModal('modal-proposal')">Annuler</button>
+          <button class="btn btn-primary" style="flex:2" onclick="generateFicheTech()">✨ Générer la fiche
+            technique</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MODAL: FICHE TECHNIQUE ÉDITABLE ══ -->
+    <div class="modal-overlay" id="modal-recipe" onclick="closeModalOutside(event,'modal-recipe')">
+      <div class="modal modal-wide">
+        <button class="modal-close" onclick="closeModal('modal-recipe')">✕</button>
+        <div id="recipe-detail-content"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════ COURSES ══════════════════════════ -->
+    <div id="page-courses" class="page">
+      <div class="topbar">
+        <h1>🛒 Liste de Courses</h1>
+        <div class="topbar-right">
+          <button class="btn btn-outline btn-sm">📋 Copier</button>
+          <button class="btn btn-primary" onclick="navigate(document.querySelector('[data-page=commander]'))">🏪
+            Commander →</button>
+        </div>
+      </div>
+      <div class="content">
+        <div class="shops-grid">
+          <!-- KORO -->
+          <div class="shop-panel">
+            <div class="shop-header">
+              <div class="shop-logo" style="background:rgba(234,179,8,.15)">🟡</div>
+              <div>
+                <div class="shop-name">Koro</div>
+                <div style="font-size:11px;color:var(--text-muted)">Produits secs & vrac</div>
+              </div>
+              <div class="shop-count" id="koro-count"></div>
+            </div>
+            <div class="shop-body" id="koro-list"></div>
+          </div>
+          <!-- SUPER U -->
+          <div class="shop-panel">
+            <div class="shop-header">
+              <div class="shop-logo" style="background:rgba(239,68,68,.15)">🔴</div>
+              <div>
+                <div class="shop-name">Super U</div>
+                <div style="font-size:11px;color:var(--text-muted)">Frais • Priorité MDD "U"</div>
+              </div>
+              <div class="shop-count" id="superu-count"></div>
+            </div>
+            <div class="shop-body" id="superu-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════ COMMANDER ══════════════════════════ -->
+    <div id="page-commander" class="page">
+      <div class="topbar">
+        <h1>🏪 Commander en Ligne</h1>
+        <div class="topbar-right">
+          <span style="font-size:13px;color:var(--text-muted)">Vérifiez et ajustez avant de lancer</span>
+        </div>
+      </div>
+      <div class="content">
+
+        <!-- INFO BAR -->
+        <div
+          style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.25);border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:var(--text-muted)">
+          💡 Cochez les articles que vous avez déjà en stock, modifiez les quantités, ajoutez des articles
+          supplémentaires — puis lancez la commande quand c'est prêt.
+        </div>
+
+        <!-- KORO -->
+        <div class="shop-panel" style="margin-bottom:20px">
+          <div class="shop-header">
+            <div class="shop-logo" style="background:rgba(234,179,8,.15)">🟡</div>
+            <div>
+              <div class="shop-name">Koro — Produits secs</div>
+              <div style="font-size:11px;color:var(--text-muted)">Vrac · Vérifiez vos stocks avant de valider</div>
+            </div>
+            <div class="shop-count" id="order-koro-count"></div>
+          </div>
+          <div class="shop-body">
+            <div id="order-koro-list"></div>
+            <button class="add-ingredient-btn" style="margin:4px 0 14px" onclick="addOrderItem('koro')">+ Ajouter un
+              article manuellement</button>
+            <div style="border-top:1px solid var(--border);padding-top:14px">
+              <button class="btn btn-primary" style="width:100%" onclick="launchOrder('koro')">
+                🤖 Lancer la commande Koro automatiquement
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUPER U -->
+        <div class="shop-panel">
+          <div class="shop-header">
+            <div class="shop-logo" style="background:rgba(239,68,68,.15)">🔴</div>
+            <div>
+              <div class="shop-name">Super U — Frais & Resto</div>
+              <div style="font-size:11px;color:var(--text-muted)">Priorité MDD "U" · Ajustez les quantités si besoin
+              </div>
+            </div>
+            <div class="shop-count" id="order-superu-count"></div>
+          </div>
+          <div class="shop-body">
+            <div id="order-superu-list"></div>
+            <button class="add-ingredient-btn" style="margin:4px 0 14px" onclick="addOrderItem('superu')">+ Ajouter un
+              article manuellement</button>
+            <div style="border-top:1px solid var(--border);padding-top:14px">
+              <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#ef4444,#b91c1c)"
+                onclick="launchOrder('superu')">
+                🤖 Lancer la commande Super U automatiquement
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════ BATCH LUNDI ══════════════════════════ -->
+    <div id="page-batch" class="page">
+      <div class="topbar">
+        <h1>🍳 Batch du Lundi</h1>
+        <div class="topbar-right">
+          <button class="btn btn-outline btn-sm" onclick="resetBatch()">↺ Réinitialiser</button>
+        </div>
+      </div>
+      <div class="content">
+        <div class="batch-header-bar">
+          <div>
+            <div style="font-size:14px;font-weight:600;margin-bottom:4px">Session de cuisine du lundi</div>
+            <div class="batch-total">Durée totale estimée : <strong id="total-time">2h45</strong></div>
+          </div>
+          <div id="batch-progress-text" style="font-size:13px;color:var(--text-muted)"></div>
+        </div>
+        <div class="batch-steps" id="batch-steps"></div>
+      </div>
+    </div>
+
+  </main>
+
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

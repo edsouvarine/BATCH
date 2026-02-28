@@ -1,0 +1,2016 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BATCH — Batch Cooking Familial</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #21262d;
+      --surface3: #30363d;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #7d8590;
+      --green: #22c55e;
+      --green-dim: rgba(34, 197, 94, 0.15);
+      --orange: #f97316;
+      --orange-dim: rgba(249, 115, 22, 0.15);
+      --blue: #3b82f6;
+      --blue-dim: rgba(59, 130, 246, 0.15);
+      --purple: #8b5cf6;
+      --purple-dim: rgba(139, 92, 246, 0.15);
+      --red: #ef4444;
+      --yellow: #eab308;
+      --sidebar-w: 210px;
+      --radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 12px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      padding: 0 8px 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo span {
+      background: linear-gradient(135deg, var(--green), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: all .15s;
+      margin-bottom: 2px;
+      border: none;
+      background: none;
+      width: 100%;
+    }
+
+    .nav-item:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .nav-item .icon {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .sidebar-spacer {
+      flex: 1;
+    }
+
+    .family-section {
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+
+    .family-title {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      padding: 0 4px 8px;
+    }
+
+    .family-member {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 4px;
+      font-size: 13px;
+    }
+
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* ── MAIN ── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .topbar h1 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .topbar-right {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .content {
+      padding: 28px;
+      flex: 1;
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all .15s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--purple), #6d28d9);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      opacity: .9;
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-outline:hover {
+      background: var(--surface2);
+    }
+
+    .btn-green {
+      background: var(--green-dim);
+      color: var(--green);
+      border: 1px solid rgba(34, 197, 94, .3);
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    /* ── TAGS ── */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .tag-vegetal {
+      background: var(--green-dim);
+      color: var(--green);
+    }
+
+    .tag-viande {
+      background: var(--orange-dim);
+      color: var(--orange);
+    }
+
+    .tag-poisson {
+      background: var(--blue-dim);
+      color: var(--blue);
+    }
+
+    .tag-ia {
+      background: var(--purple-dim);
+      color: var(--purple);
+    }
+
+    .tag-koro {
+      background: rgba(234, 179, 8, .15);
+      color: var(--yellow);
+    }
+
+    .tag-superu {
+      background: rgba(239, 68, 68, .15);
+      color: var(--red);
+    }
+
+    /* ── STARS ── */
+    .stars {
+      color: var(--yellow);
+      font-size: 11px;
+    }
+
+    .stars .empty {
+      color: var(--surface3);
+    }
+
+    /* ── PAGE: PLANNING ── */
+    #page-planning {
+      display: block;
+    }
+
+    .week-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .week-label {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+    }
+
+    .day-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .day-header {
+      text-align: center;
+      padding: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .day-header.today {
+      color: var(--green);
+    }
+
+    .meal-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px;
+      min-height: 90px;
+      cursor: pointer;
+      transition: all .15s;
+      position: relative;
+    }
+
+    .meal-card:hover {
+      border-color: var(--purple);
+      background: var(--surface2);
+      transform: translateY(-1px);
+    }
+
+    .meal-card.empty {
+      border-style: dashed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 22px;
+    }
+
+    .meal-card.empty:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .meal-name {
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .meal-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    /* ── PAGE: RECETTES ── */
+    #page-recettes {
+      display: none;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .filter-btn {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--surface2);
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .filter-btn.f-vegetal.active {
+      background: var(--green-dim);
+      color: var(--green);
+      border-color: rgba(34, 197, 94, .3);
+    }
+
+    .filter-btn.f-viande.active {
+      background: var(--orange-dim);
+      color: var(--orange);
+      border-color: rgba(249, 115, 22, .3);
+    }
+
+    .filter-btn.f-poisson.active {
+      background: var(--blue-dim);
+      color: var(--blue);
+      border-color: rgba(59, 130, 246, .3);
+    }
+
+    .recipes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .recipe-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .recipe-card:hover {
+      border-color: var(--purple);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .4);
+    }
+
+    .recipe-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .recipe-meta {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .recipe-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .recipe-time {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .star-rate {
+      display: flex;
+      gap: 2px;
+    }
+
+    .star-rate span {
+      cursor: pointer;
+      font-size: 16px;
+      color: var(--surface3);
+      transition: color .1s;
+    }
+
+    .star-rate span.active {
+      color: var(--yellow);
+    }
+
+    .star-rate span:hover {
+      color: var(--yellow);
+    }
+
+    /* ── PAGE: COURSES ── */
+    #page-courses {
+      display: none;
+    }
+
+    .shops-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .shop-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .shop-header {
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .shop-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .shop-name {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .shop-count {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .shop-body {
+      padding: 12px;
+    }
+
+    .category-group {
+      margin-bottom: 12px;
+    }
+
+    .category-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 6px;
+    }
+
+    .ingredient-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 4px;
+      border-radius: 6px;
+      transition: background .1s;
+    }
+
+    .ingredient-row:hover {
+      background: var(--surface2);
+    }
+
+    .ingredient-row input[type="checkbox"] {
+      accent-color: var(--green);
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+    }
+
+    .ingredient-name {
+      flex: 1;
+      font-size: 13px;
+    }
+
+    .ingredient-qty {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .ingredient-row.checked .ingredient-name {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    /* ── PAGE: BATCH ── */
+    #page-batch {
+      display: none;
+    }
+
+    .batch-header-bar {
+      background: linear-gradient(135deg, rgba(139, 92, 246, .2), rgba(34, 197, 94, .1));
+      border: 1px solid rgba(139, 92, 246, .3);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .batch-total {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .batch-total strong {
+      color: var(--text);
+      font-size: 18px;
+    }
+
+    .batch-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .batch-step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all .15s;
+    }
+
+    .batch-step.done {
+      opacity: .6;
+    }
+
+    .batch-step.done .step-name {
+      text-decoration: line-through;
+    }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .step-info {
+      flex: 1;
+    }
+
+    .step-name {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 3px;
+    }
+
+    .step-tech {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .step-duration {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--purple);
+      padding: 4px 10px;
+      background: var(--purple-dim);
+      border-radius: 20px;
+    }
+
+    .timer-btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .timer-btn:hover {
+      background: var(--green-dim);
+      color: var(--green);
+      border-color: rgba(34, 197, 94, .3);
+    }
+
+    .timer-btn.running {
+      background: var(--green-dim);
+      color: var(--green);
+      border-color: rgba(34, 197, 94, .3);
+    }
+
+    /* ── PAGE: COMMANDER ── */
+    #page-commander {
+      display: none;
+    }
+
+    .order-flow {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .order-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .order-card-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .order-card-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .order-items {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 2;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .status-ready {
+      background: var(--green-dim);
+      color: var(--green);
+    }
+
+    .status-waiting {
+      background: var(--surface2);
+      color: var(--text-muted);
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: var(--surface2);
+      border-radius: 2px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--blue));
+      border-radius: 2px;
+      transition: width 1s;
+    }
+
+    /* ── MODULES HIDDEN ── */
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .7);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.open {
+      display: flex;
+      animation: fadeIn .15s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      width: 560px;
+      max-width: 95vw;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 28px;
+      animation: slideUp .2s ease;
+    }
+
+    .modal-wide {
+      width: 720px;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1
+      }
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .modal-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .modal-close {
+      float: right;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+      margin-top: -4px;
+    }
+
+    .modal-close:hover {
+      color: var(--text);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .form-input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color .15s;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--purple);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-select {
+      appearance: none;
+      cursor: pointer;
+    }
+
+    .type-selector {
+      display: flex;
+      gap: 8px;
+    }
+
+    .type-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all .15s;
+      text-align: center;
+    }
+
+    .type-btn:hover {
+      background: var(--surface2);
+    }
+
+    .type-btn.selected-vegetal {
+      background: var(--green-dim);
+      color: var(--green);
+      border-color: rgba(34, 197, 94, .4);
+    }
+
+    .type-btn.selected-viande {
+      background: var(--orange-dim);
+      color: var(--orange);
+      border-color: rgba(249, 115, 22, .4);
+    }
+
+    .type-btn.selected-poisson {
+      background: var(--blue-dim);
+      color: var(--blue);
+      border-color: rgba(59, 130, 246, .4);
+    }
+
+    .generating-bar {
+      background: var(--purple-dim);
+      border: 1px solid rgba(139, 92, 246, .3);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin: 16px 0;
+      display: none;
+    }
+
+    .generating-bar.show {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--purple);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ── EDITABLE FICHE TECHNIQUE ── */
+    .fiche-section {
+      margin-bottom: 20px;
+    }
+
+    .fiche-section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .editable-field {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background .1s;
+      margin-bottom: 4px;
+      group: true;
+    }
+
+    .editable-field:hover {
+      background: var(--surface2);
+    }
+
+    .editable-field:hover .edit-icon {
+      opacity: 1;
+    }
+
+    .field-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      width: 100px;
+      flex-shrink: 0;
+    }
+
+    .field-value {
+      font-size: 13px;
+      flex: 1;
+    }
+
+    .edit-icon {
+      font-size: 11px;
+      color: var(--text-muted);
+      opacity: 0;
+      transition: opacity .1s;
+    }
+
+    .editable-field input,
+    .editable-field textarea,
+    .editable-field select {
+      flex: 1;
+      background: var(--surface3);
+      border: 1px solid var(--purple);
+      border-radius: 6px;
+      padding: 5px 8px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .ingredient-edit-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
+      align-items: center;
+    }
+
+    .ingredient-edit-row input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 8px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    .ingredient-edit-row input:focus {
+      border-color: var(--purple);
+    }
+
+    .ingredient-edit-row .qty-input {
+      width: 80px;
+      flex: none;
+    }
+
+    .ingredient-edit-row .store-select {
+      width: 90px;
+      flex: none;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 8px;
+      color: var(--text);
+      font-size: 12px;
+      font-family: inherit;
+    }
+
+    .del-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 2px 4px;
+      transition: color .1s;
+    }
+
+    .del-btn:hover {
+      color: var(--red);
+    }
+
+    .add-ingredient-btn {
+      font-size: 12px;
+      color: var(--purple);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px 0;
+    }
+
+    .add-ingredient-btn:hover {
+      text-decoration: underline;
+    }
+
+    .batch-step-edit {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
+      align-items: flex-start;
+    }
+
+    .batch-step-edit textarea {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 8px;
+      color: var(--text);
+      font-size: 12px;
+      font-family: inherit;
+      resize: none;
+      height: 36px;
+      outline: none;
+    }
+
+    .batch-step-edit textarea:focus {
+      border-color: var(--purple);
+    }
+
+    .recipe-card-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="logo">🍳 <span>BATCH</span></div>
+    <button class="nav-item active" data-page="planning" onclick="navigate(this)">
+      <span class="icon">📅</span> Planning
+    </button>
+    <button class="nav-item" data-page="recettes" onclick="navigate(this)">
+      <span class="icon">📖</span> Recettes
+    </button>
+    <button class="nav-item" data-page="courses" onclick="navigate(this)">
+      <span class="icon">🛒</span> Courses
+    </button>
+    <button class="nav-item" data-page="commander" onclick="navigate(this)">
+      <span class="icon">🏪</span> Commander
+    </button>
+    <button class="nav-item" data-page="batch" onclick="navigate(this)">
+      <span class="icon">🍳</span> Batch Lundi
+    </button>
+    <div class="sidebar-spacer"></div>
+    <div class="family-section">
+      <div class="family-title">Famille</div>
+      <div class="family-member">
+        <div class="avatar" style="background:#3b82f6">N</div> Nico
+      </div>
+      <div class="family-member">
+        <div class="avatar" style="background:#ec4899">F</div> Flo
+      </div>
+      <div class="family-member">
+        <div class="avatar" style="background:#22c55e">S</div> Sacha
+      </div>
+      <div class="family-member">
+        <div class="avatar" style="background:#f97316">V</div> Victor
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ══════════════════════════ PLANNING ══════════════════════════ -->
+    <div id="page-planning" class="page active">
+      <div class="topbar">
+        <h1>📅 Planning de la semaine</h1>
+        <div class="topbar-right">
+          <button class="btn btn-outline btn-sm" onclick="prevWeek()">← Semaine préc.</button>
+          <span id="week-label" style="font-size:14px;font-weight:600"></span>
+          <button class="btn btn-outline btn-sm" onclick="nextWeek()">Semaine suiv. →</button>
+          <button class="btn btn-primary" onclick="generateMenu()">✨ Générer avec Claude</button>
+        </div>
+      </div>
+      <div class="content">
+        <div class="week-grid" id="week-grid"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════ RECETTES ══════════════════════════ -->
+    <div id="page-recettes" class="page">
+      <div class="topbar">
+        <h1>📖 Catalogue Recettes</h1>
+        <div class="topbar-right">
+          <button class="btn btn-outline" onclick="openProposalModal()">➕ Proposer une recette</button>
+          <button class="btn btn-primary" onclick="aiDiscovery()">✨ Découverte IA</button>
+        </div>
+      </div>
+      <div class="content">
+        <div class="filters">
+          <button class="filter-btn active" onclick="filterRecipes('all', this)">Toutes</button>
+          <button class="filter-btn f-vegetal" onclick="filterRecipes('vegetal', this)">🥦 Végétal</button>
+          <button class="filter-btn f-viande" onclick="filterRecipes('viande', this)">🥩 Viande</button>
+          <button class="filter-btn f-poisson" onclick="filterRecipes('poisson', this)">🐟 Poisson</button>
+          <button class="filter-btn" onclick="filterRecipes('favoris', this)">⭐ Favoris</button>
+          <button class="filter-btn" onclick="filterRecipes('ia', this)">✨ Proposées IA</button>
+        </div>
+        <div class="recipes-grid" id="recipes-grid"></div>
+      </div>
+    </div>
+
+    <!-- ══ MODAL: PROPOSER UNE RECETTE ══ -->
+    <div class="modal-overlay" id="modal-proposal" onclick="closeModalOutside(event,'modal-proposal')">
+      <div class="modal">
+        <button class="modal-close" onclick="closeModal('modal-proposal')">✕</button>
+        <div class="modal-title">➕ Proposer une recette</div>
+        <div class="modal-sub">Décrivez votre recette — Claude génère la fiche technique complète</div>
+
+        <div class="form-group">
+          <label class="form-label">Nom de la recette *</label>
+          <input class="form-input" id="prop-name" placeholder="Ex: Gratin de courgettes au chèvre" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description / Idée (optionnel)</label>
+          <textarea class="form-input form-textarea" id="prop-desc"
+            placeholder="Quelques mots sur la recette, les ingrédients principaux, le style de cuisson..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          <div class="type-selector">
+            <button class="type-btn selected-vegetal" id="type-vegetal" onclick="selectType('vegetal')">🥦
+              Végétal</button>
+            <button class="type-btn" id="type-viande" onclick="selectType('viande')">🥩 Viande</button>
+            <button class="type-btn" id="type-poisson" onclick="selectType('poisson')">🐟 Poisson</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Saison</label>
+          <select class="form-input form-select" id="prop-saison">
+            <option value="toute">Toute l'année</option>
+            <option value="printemps">Printemps</option>
+            <option value="été">Été</option>
+            <option value="automne">Automne</option>
+            <option value="hiver">Hiver</option>
+          </select>
+        </div>
+
+        <div class="generating-bar" id="generating-bar">
+          <div class="spinner"></div>
+          <span style="font-size:13px;color:var(--purple)">Claude génère la fiche technique...</span>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:4px">
+          <button class="btn btn-outline" style="flex:1" onclick="closeModal('modal-proposal')">Annuler</button>
+          <button class="btn btn-primary" style="flex:2" onclick="generateFicheTech()">✨ Générer la fiche
+            technique</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MODAL: FICHE TECHNIQUE ÉDITABLE ══ -->
+    <div class="modal-overlay" id="modal-recipe" onclick="closeModalOutside(event,'modal-recipe')">
+      <div class="modal modal-wide">
+        <button class="modal-close" onclick="closeModal('modal-recipe')">✕</button>
+        <div id="recipe-detail-content"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════ COURSES ══════════════════════════ -->
+    <div id="page-courses" class="page">
+      <div class="topbar">
+        <h1>🛒 Liste de Courses</h1>
+        <div class="topbar-right">
+          <button class="btn btn-outline btn-sm">📋 Copier</button>
+          <button class="btn btn-primary" onclick="navigate(document.querySelector('[data-page=commander]'))">🏪
+            Commander →</button>
+        </div>
+      </div>
+      <div class="content">
+        <div class="shops-grid">
+          <!-- KORO -->
+          <div class="shop-panel">
+            <div class="shop-header">
+              <div class="shop-logo" style="background:rgba(234,179,8,.15)">🟡</div>
+              <div>
+                <div class="shop-name">Koro</div>
+                <div style="font-size:11px;color:var(--text-muted)">Produits secs & vrac</div>
+              </div>
+              <div class="shop-count" id="koro-count"></div>
+            </div>
+            <div class="shop-body" id="koro-list"></div>
+          </div>
+          <!-- SUPER U -->
+          <div class="shop-panel">
+            <div class="shop-header">
+              <div class="shop-logo" style="background:rgba(239,68,68,.15)">🔴</div>
+              <div>
+                <div class="shop-name">Super U</div>
+                <div style="font-size:11px;color:var(--text-muted)">Frais • Priorité MDD "U"</div>
+              </div>
+              <div class="shop-count" id="superu-count"></div>
+            </div>
+            <div class="shop-body" id="superu-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════ COMMANDER ══════════════════════════ -->
+    <div id="page-commander" class="page">
+      <div class="topbar">
+        <h1>🏪 Commander en Ligne</h1>
+        <div class="topbar-right">
+          <span style="font-size:13px;color:var(--text-muted)">Vérifiez et ajustez avant de lancer</span>
+        </div>
+      </div>
+      <div class="content">
+
+        <!-- INFO BAR -->
+        <div
+          style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.25);border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:var(--text-muted)">
+          💡 Cochez les articles que vous avez déjà en stock, modifiez les quantités, ajoutez des articles
+          supplémentaires — puis lancez la commande quand c'est prêt.
+        </div>
+
+        <!-- KORO -->
+        <div class="shop-panel" style="margin-bottom:20px">
+          <div class="shop-header">
+            <div class="shop-logo" style="background:rgba(234,179,8,.15)">🟡</div>
+            <div>
+              <div class="shop-name">Koro — Produits secs</div>
+              <div style="font-size:11px;color:var(--text-muted)">Vrac · Vérifiez vos stocks avant de valider</div>
+            </div>
+            <div class="shop-count" id="order-koro-count"></div>
+          </div>
+          <div class="shop-body">
+            <div id="order-koro-list"></div>
+            <button class="add-ingredient-btn" style="margin:4px 0 14px" onclick="addOrderItem('koro')">+ Ajouter un
+              article manuellement</button>
+            <div style="border-top:1px solid var(--border);padding-top:14px">
+              <button class="btn btn-primary" style="width:100%" onclick="launchOrder('koro')">
+                🤖 Lancer la commande Koro automatiquement
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUPER U -->
+        <div class="shop-panel">
+          <div class="shop-header">
+            <div class="shop-logo" style="background:rgba(239,68,68,.15)">🔴</div>
+            <div>
+              <div class="shop-name">Super U — Frais & Resto</div>
+              <div style="font-size:11px;color:var(--text-muted)">Priorité MDD "U" · Ajustez les quantités si besoin
+              </div>
+            </div>
+            <div class="shop-count" id="order-superu-count"></div>
+          </div>
+          <div class="shop-body">
+            <div id="order-superu-list"></div>
+            <button class="add-ingredient-btn" style="margin:4px 0 14px" onclick="addOrderItem('superu')">+ Ajouter un
+              article manuellement</button>
+            <div style="border-top:1px solid var(--border);padding-top:14px">
+              <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#ef4444,#b91c1c)"
+                onclick="launchOrder('superu')">
+                🤖 Lancer la commande Super U automatiquement
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════ BATCH LUNDI ══════════════════════════ -->
+    <div id="page-batch" class="page">
+      <div class="topbar">
+        <h1>🍳 Batch du Lundi</h1>
+        <div class="topbar-right">
+          <button class="btn btn-outline btn-sm" onclick="resetBatch()">↺ Réinitialiser</button>
+        </div>
+      </div>
+      <div class="content">
+        <div class="batch-header-bar">
+          <div>
+            <div style="font-size:14px;font-weight:600;margin-bottom:4px">Session de cuisine du lundi</div>
+            <div class="batch-total">Durée totale estimée : <strong id="total-time">2h45</strong></div>
+          </div>
+          <div id="batch-progress-text" style="font-size:13px;color:var(--text-muted)"></div>
+        </div>
+        <div class="batch-steps" id="batch-steps"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // ── DATA ──────────────────────────────────────────────────────────────────
+    const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+
+    const RECIPES = [
+      { id: 'r01', name: 'Dahl de lentilles corail', type: 'vegetal', season: ['automne', 'hiver', 'printemps'], time: '35 min', store: { lentilles: 'koro', lait_coco: 'superu', tomates: 'superu' }, stars: 5, origin: 'catalogue' },
+      { id: 'r02', name: 'Curry de pois chiches aux épinards', type: 'vegetal', season: ['toute'], time: '30 min', store: {}, stars: 4, origin: 'catalogue' },
+      { id: 'r03', name: 'Soupe de courge butternut', type: 'vegetal', season: ['automne', 'hiver'], time: '45 min', store: {}, stars: 5, origin: 'catalogue' },
+      { id: 'r04', name: 'Gratin de légumes d\'hiver', type: 'vegetal', season: ['hiver'], time: '60 min', store: {}, stars: 3, origin: 'catalogue' },
+      { id: 'r05', name: 'Minestrone de légumes', type: 'vegetal', season: ['printemps', 'été'], time: '50 min', store: {}, stars: 4, origin: 'catalogue' },
+      { id: 'r06', name: 'Tian provençal', type: 'vegetal', season: ['été'], time: '65 min', store: {}, stars: 5, origin: 'catalogue' },
+      { id: 'r07', name: 'Poêlée de légumes et œufs', type: 'vegetal', season: ['toute'], time: '25 min', store: {}, stars: 4, origin: 'catalogue' },
+      { id: 'r08', name: 'Quiche aux légumes', type: 'vegetal', season: ['toute'], time: '55 min', store: {}, stars: 4, origin: 'catalogue' },
+      { id: 'r09', name: 'Riz pilaf aux légumes', type: 'vegetal', season: ['toute'], time: '30 min', store: {}, stars: 3, origin: 'catalogue' },
+      { id: 'r10', name: 'Taboulé de légumes et herbes', type: 'vegetal', season: ['printemps', 'été'], time: '20 min', store: {}, stars: 5, origin: 'catalogue' },
+      { id: 'r11', name: 'Soupe de tomates fraîches', type: 'vegetal', season: ['été'], time: '30 min', store: {}, stars: 4, origin: 'catalogue' },
+      { id: 'r12', name: 'Poêlée châtaignes et champignons', type: 'vegetal', season: ['automne'], time: '35 min', store: {}, stars: 3, origin: 'catalogue' },
+      { id: 'r13', name: 'Poulet rôti façon batch', type: 'viande', season: ['toute'], time: '85 min', store: {}, stars: 5, origin: 'catalogue' },
+      { id: 'r14', name: 'Boulettes sauce tomate', type: 'viande', season: ['toute'], time: '45 min', store: {}, stars: 5, origin: 'catalogue' },
+      { id: 'r15', name: 'Sauté de dinde aux légumes', type: 'viande', season: ['printemps', 'été'], time: '35 min', store: {}, stars: 4, origin: 'catalogue' },
+      { id: 'r16', name: 'Hachis parmentier allégé', type: 'viande', season: ['automne', 'hiver'], time: '65 min', store: {}, stars: 5, origin: 'catalogue' },
+      { id: 'r17', name: 'Blanquette de poulet', type: 'viande', season: ['automne', 'hiver', 'printemps'], time: '65 min', store: {}, stars: 4, origin: 'catalogue' },
+      { id: 'r18', name: 'Cabillaud vapeur et légumes', type: 'poisson', season: ['toute'], time: '25 min', store: {}, stars: 3, origin: 'catalogue' },
+      { id: 'r19', name: 'Saumon en papillote', type: 'poisson', season: ['toute'], time: '35 min', store: {}, stars: 4, origin: 'catalogue' },
+      { id: 'r20', name: 'Cake au thon', type: 'poisson', season: ['toute'], time: '60 min', store: {}, stars: 4, origin: 'catalogue' },
+    ];
+
+    const SHOPPING = {
+      koro: {
+        'Légumineuses': [
+          { name: 'Lentilles corail', qty: '288g' },
+          { name: 'Pois chiches secs', qty: '187g' },
+        ],
+        'Céréales': [
+          { name: 'Riz basmati', qty: '360g' },
+          { name: 'Pâtes tagliatelles', qty: '216g' },
+          { name: 'Semoule fine', qty: '360g' },
+        ],
+        'Épices & herbes': [
+          { name: 'Cumin moulu', qty: '10g' },
+          { name: 'Curcuma', qty: '10g' },
+          { name: 'Curry en poudre', qty: '14g' },
+          { name: 'Herbes de Provence', qty: '10g' },
+        ],
+        'Huiles': [
+          { name: 'Huile d\'olive', qty: '180ml' },
+        ],
+      },
+      superu: {
+        'Légumes frais': [
+          { name: 'Courgettes', qty: '1.4kg' },
+          { name: 'Carottes', qty: '900g' },
+          { name: 'Champignons', qty: '720g' },
+          { name: 'Épinards frais', qty: '432g' },
+          { name: 'Tomates fraîches', qty: '1.3kg' },
+        ],
+        'Viandes & Poissons': [
+          { name: 'Cuisses de poulet', qty: '720g' },
+          { name: 'Viande hachée 5%', qty: '504g' },
+          { name: 'Dos de cabillaud', qty: '576g' },
+        ],
+        'Crémerie': [
+          { name: 'Œufs (MDD U)', qty: '9 unités' },
+          { name: 'Crème fraîche (MDD U)', qty: '540ml' },
+          { name: 'Beurre (MDD U)', qty: '120g' },
+          { name: 'Gruyère râpé (MDD U)', qty: '216g' },
+        ],
+        'Conserves': [
+          { name: 'Tomates concassées', qty: '2 boîtes 400g' },
+          { name: 'Lait de coco', qty: '2 boîtes 400ml' },
+          { name: 'Thon en boîte', qty: '2 boîtes 160g' },
+        ],
+      }
+    };
+
+    const BATCH_STEPS = [
+      { name: 'Préparer et cuire le dahl de lentilles', tech: 'Mijoter à feu doux, couvercle', duration: '25 min', time: '14h00' },
+      { name: 'Enfourner le poulet rôti', tech: 'Four à 180°C, thermostat 6', duration: '75 min', time: '14h05' },
+      { name: 'Préparer la sauce tomate des boulettes', tech: 'Mijoter', duration: '20 min', time: '14h10' },
+      { name: 'Former et dorer les boulettes', tech: 'Saisir à feu vif, poêle anti-adhésive', duration: '15 min', time: '14h30' },
+      { name: 'Couper et préparer les légumes semaine', tech: 'Julienne, brunoise selon recette', duration: '30 min', time: '15h00' },
+      { name: 'Cuire le riz pilaf', tech: 'Absorption, ratio 2:1 eau/riz', duration: '20 min', time: '15h30' },
+      { name: 'Sortir et effilocher le poulet', tech: 'À la fourchette encore chaud', duration: '10 min', time: '16h20' },
+      { name: 'Conditionner en portions', tech: 'Boîtes hermétiques, étiqueter', duration: '15 min', time: '16h30' },
+    ];
+
+    // ── STATE ──────────────────────────────────────────────────────────────────
+    let currentWeekOffset = 0;
+    let weekPlan = {};
+    let checkedItems = {};
+    let activeTimers = {};
+    let completedSteps = {};
+    let filterActive = 'all';
+
+    // ── NAVIGATION ────────────────────────────────────────────────────────────
+    function navigate(el) {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('page-' + el.dataset.page).classList.add('active');
+    }
+
+    // ── PLANNING ──────────────────────────────────────────────────────────────
+    function getWeekStart(offset) {
+      const d = new Date();
+      const day = d.getDay() || 7;
+      d.setDate(d.getDate() - day + 1 + offset * 7);
+      return d;
+    }
+    function formatWeekLabel(d) {
+      const end = new Date(d); end.setDate(d.getDate() + 6);
+      const fmt = dt => dt.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+      return `Semaine du ${fmt(d)} au ${fmt(end)} ${end.getFullYear()}`;
+    }
+    function prevWeek() { currentWeekOffset--; renderPlanning(); }
+    function nextWeek() { currentWeekOffset++; renderPlanning(); }
+
+    function renderPlanning() {
+      const ws = getWeekStart(currentWeekOffset);
+      document.getElementById('week-label').textContent = formatWeekLabel(ws);
+      const grid = document.getElementById('week-grid');
+      const today = new Date().toDateString();
+      grid.innerHTML = '';
+      DAYS.forEach((day, i) => {
+        const date = new Date(ws); date.setDate(ws.getDate() + i);
+        const key = date.toDateString();
+        const recipe = weekPlan[key];
+        const col = document.createElement('div');
+        col.className = 'day-col';
+        col.innerHTML = `<div class="day-header${date.toDateString() === today ? ' today' : ''}">${day}<br><small style="font-weight:400">${date.getDate()}/${date.getMonth() + 1}</small></div>`;
+        const card = document.createElement('div');
+        if (recipe) {
+          const r = RECIPES.find(r => r.id === recipe);
+          card.className = 'meal-card';
+          card.innerHTML = `
+        <div class="meal-name">${r.name}</div>
+        <div class="meal-footer">
+          <span class="tag tag-${r.type}">${r.type === 'vegetal' ? '🥦' : r.type === 'viande' ? '🥩' : '🐟'} ${r.type}</span>
+          <span class="stars">${'⭐'.repeat(r.stars)}</span>
+        </div>`;
+          card.onclick = () => removeMeal(key);
+          card.title = 'Cliquer pour supprimer';
+        } else {
+          card.className = 'meal-card empty';
+          card.textContent = '+';
+          card.onclick = () => pickRecipe(key);
+          card.title = 'Ajouter une recette';
+        }
+        col.appendChild(card);
+        grid.appendChild(col);
+      });
+    }
+
+    function pickRecipe(dateKey) {
+      const choice = RECIPES.map((r, i) => `${i + 1}. ${r.name} (${r.type})`).join('\n');
+      const num = prompt(`Choisir une recette (1-${RECIPES.length}):\n\n${choice}`);
+      const idx = parseInt(num) - 1;
+      if (idx >= 0 && idx < RECIPES.length) {
+        weekPlan[dateKey] = RECIPES[idx].id;
+        renderPlanning();
+        renderShopping();
+      }
+    }
+    function removeMeal(dateKey) {
+      if (confirm('Supprimer ce repas ?')) { delete weekPlan[dateKey]; renderPlanning(); renderShopping(); }
+    }
+
+    function generateMenu() {
+      const btn = document.querySelector('.btn-primary');
+      btn.textContent = '⏳ Génération...';
+      btn.disabled = true;
+      setTimeout(() => {
+        // Simulated AI-generated menu: 4 vegetal, 2 viande, 1 poisson
+        const vegetal = RECIPES.filter(r => r.type === 'vegetal').sort(() => .5 - Math.random()).slice(0, 4);
+        const viande = RECIPES.filter(r => r.type === 'viande').sort(() => .5 - Math.random()).slice(0, 2);
+        const poisson = RECIPES.filter(r => r.type === 'poisson').sort(() => .5 - Math.random()).slice(0, 1);
+        const week = [...vegetal, ...viande, ...poisson].sort(() => .5 - Math.random());
+        const ws = getWeekStart(currentWeekOffset);
+        week.forEach((recipe, i) => {
+          const d = new Date(ws); d.setDate(ws.getDate() + i);
+          weekPlan[d.toDateString()] = recipe.id;
+        });
+        renderPlanning();
+        renderShopping();
+        btn.textContent = '✨ Générer avec Claude';
+        btn.disabled = false;
+      }, 1200);
+    }
+
+    // ── RECETTES ──────────────────────────────────────────────────────────────
+    function renderRecipes(filter) {
+      const grid = document.getElementById('recipes-grid');
+      let list = RECIPES;
+      if (filter === 'vegetal') list = RECIPES.filter(r => r.type === 'vegetal');
+      else if (filter === 'viande') list = RECIPES.filter(r => r.type === 'viande');
+      else if (filter === 'poisson') list = RECIPES.filter(r => r.type === 'poisson');
+      else if (filter === 'favoris') list = RECIPES.filter(r => r.stars >= 5);
+      else if (filter === 'ia') list = RECIPES.filter(r => r.origin === 'ia');
+      grid.innerHTML = list.map(r => `
+    <div class="recipe-card">
+      <div class="recipe-name">${r.name}</div>
+      <div class="recipe-meta">
+        <span class="tag tag-${r.type}">${r.type === 'vegetal' ? '🥦' : r.type === 'viande' ? '🥩' : '🐟'} ${r.type}</span>
+        ${r.origin === 'ia' ? '<span class="tag tag-ia">✨ IA</span>' : ''}
+        <span class="tag tag-koro" style="font-size:10px">🟡 Koro+SuperU</span>
+      </div>
+      <div class="recipe-footer">
+        <div class="recipe-time">⏱ ${r.time}</div>
+        <div class="star-rate" id="stars-${r.id}">
+          ${[1, 2, 3, 4, 5].map(s => `<span class="${s <= r.stars ? 'active' : ''}" onclick="event.stopPropagation();rateRecipe('${r.id}',${s})">★</span>`).join('')}
+        </div>
+      </div>
+      <div class="recipe-card-actions">
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="openRecipeDetail('${r.id}')">✏️ Voir & modifier</button>
+        <button class="btn btn-green btn-sm" onclick="addToPlanning('${r.id}')">📅 Ajouter au planning</button>
+      </div>
+    </div>`).join('');
+    }
+    function filterRecipes(f, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filterActive = f;
+      renderRecipes(f);
+    }
+    function rateRecipe(id, stars) {
+      const r = RECIPES.find(r => r.id === id);
+      if (r) { r.stars = stars; renderRecipes(filterActive); }
+    }
+    function addToPlanning(id) {
+      alert('📅 Recette ajoutée au planning !\n\nAllez dans le Planning pour choisir le jour.');
+    }
+    function aiDiscovery() {
+      alert('✨ Claude va proposer 2 nouvelles recettes de saison adaptées à votre famille...\n\n(Fonctionnalité disponible avec la clé API Claude)');
+    }
+
+    // ── MODAL PROPOSER UNE RECETTE ────────────────────────────────────────────
+    let selectedType = 'vegetal';
+    function openProposalModal() {
+      document.getElementById('prop-name').value = '';
+      document.getElementById('prop-desc').value = '';
+      document.getElementById('generating-bar').classList.remove('show');
+      selectType('vegetal');
+      document.getElementById('modal-proposal').classList.add('open');
+    }
+    function selectType(t) {
+      selectedType = t;
+      ['vegetal', 'viande', 'poisson'].forEach(type => {
+        const btn = document.getElementById('type-' + type);
+        btn.className = 'type-btn' + (type === t ? ' selected-' + type : '');
+      });
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+    function closeModalOutside(e, id) {
+      if (e.target.id === id) closeModal(id);
+    }
+
+    const GENERATED_TEMPLATES = {
+      vegetal: (name) => ({
+        ingredients: [
+          { name: 'Légumes de saison', qty: '400g', store: 'superu' },
+          { name: 'Huile d\'olive', qty: '20ml', store: 'koro' },
+          { name: 'Ail', qty: '10g', store: 'superu' },
+          { name: 'Herbes de Provence', qty: '3g', store: 'koro' },
+          { name: 'Sel, poivre', qty: 'QS', store: 'superu' },
+        ],
+        batchSteps: ['Laver et couper les légumes', 'Faire revenir l\'ail dans l\'huile 2 min', 'Ajouter les légumes, cuire 20 min à feu moyen', 'Refroidir et conditionner en portions'],
+        finition: 'Réchauffer 5 min, ajouter herbes fraîches si disponibles',
+        time: '30 min',
+      }),
+      viande: (name) => ({
+        ingredients: [
+          { name: 'Viande (poulet/bœuf)', qty: '160g', store: 'superu' },
+          { name: 'Légumes de saison', qty: '200g', store: 'superu' },
+          { name: 'Bouillon', qty: '150ml', store: 'superu' },
+          { name: 'Huile d\'olive', qty: '15ml', store: 'koro' },
+          { name: 'Épices au choix', qty: '5g', store: 'koro' },
+        ],
+        batchSteps: ['Mariner la viande 30 min', 'Saisir à feu vif 5 min de chaque côté', 'Ajouter légumes et bouillon, mijoter 25 min', 'Effilocher ou portionner, conserver en boîtes'],
+        finition: 'Réchauffer doucement + accompagnement (riz ou pâtes)',
+        time: '45 min',
+      }),
+      poisson: (name) => ({
+        ingredients: [
+          { name: 'Filet de poisson', qty: '150g', store: 'superu' },
+          { name: 'Citron', qty: '1/2', store: 'superu' },
+          { name: 'Herbes fraîches', qty: '5g', store: 'superu' },
+          { name: 'Huile d\'olive', qty: '10ml', store: 'koro' },
+          { name: 'Légumes vapeur', qty: '150g', store: 'superu' },
+        ],
+        batchSteps: ['Préparer les légumes vapeur (conservables 3j)', 'Assaisonner le poisson avec citron + herbes'],
+        finition: 'Cuire le poisson jour J (vapeur 12 min ou papillote 18 min)',
+        time: '20 min (+ cuisson jour J)',
+      }),
+    };
+
+    function generateFicheTech() {
+      const name = document.getElementById('prop-name').value.trim();
+      if (!name) { alert('Veuillez saisir un nom de recette !'); return; }
+      const bar = document.getElementById('generating-bar');
+      bar.classList.add('show');
+      document.querySelector('#modal-proposal .btn-primary').disabled = true;
+      setTimeout(() => {
+        bar.classList.remove('show');
+        closeModal('modal-proposal');
+        const tpl = GENERATED_TEMPLATES[selectedType](name);
+        const newId = 'r' + (RECIPES.length + 1).toString().padStart(2, '0');
+        const saison = document.getElementById('prop-saison').value;
+        const newRecipe = {
+          id: newId, name,
+          type: selectedType,
+          season: [saison],
+          time: tpl.time,
+          stars: 0,
+          origin: 'user',
+          ingredients: tpl.ingredients,
+          batchSteps: tpl.batchSteps,
+          finition: tpl.finition,
+        };
+        RECIPES.push(newRecipe);
+        renderRecipes(filterActive);
+        document.querySelector('#modal-proposal .btn-primary').disabled = false;
+        setTimeout(() => openRecipeDetail(newId), 100);
+      }, 1800);
+    }
+
+    // ── FICHE TECHNIQUE ÉDITABLE ──────────────────────────────────────────────
+    function openRecipeDetail(id) {
+      const r = RECIPES.find(r => r.id === id);
+      if (!r) return;
+      const ingredients = r.ingredients || [
+        { name: 'Ingrédient 1', qty: '100g', store: 'superu' },
+        { name: 'Ingrédient 2', qty: '50ml', store: 'koro' },
+      ];
+      const batchSteps = r.batchSteps || ['Préparer les ingrédients', 'Cuire et conditionner'];
+      const finition = r.finition || 'Réchauffer et servir';
+      document.getElementById('recipe-detail-content').innerHTML = `
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px">
+      <div>
+        <div style="font-size:20px;font-weight:700;margin-bottom:6px" contenteditable="true" onblur="saveField('${id}','name',this.textContent)">${r.name}</div>
+        <div style="display:flex;gap:8px">
+          <span class="tag tag-${r.type}">${r.type === 'vegetal' ? '🥦' : r.type === 'viande' ? '🥩' : '🐟'} ${r.type}</span>
+          ${r.origin === 'user' ? '<span class="tag tag-ia">✍️ Ma recette</span>' : r.origin === 'ia' ? '<span class="tag tag-ia">✨ IA</span>' : ''}
+          <span style="font-size:12px;color:var(--text-muted)">⏱ ${r.time}</span>
+        </div>
+      </div>
+      <div class="star-rate" style="font-size:20px">
+        ${[1, 2, 3, 4, 5].map(s => `<span class="${s <= r.stars ? 'active' : ''}" onclick="rateRecipe('${r.id}',${s});openRecipeDetail('${r.id}')">★</span>`).join('')}
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:24px">
+      <div class="editable-field" onclick="editInline(this,'time')"><span class="field-label">⏱ Temps total</span><span class="field-value">${r.time}</span><span class="edit-icon">✏️</span></div>
+      <div class="editable-field" onclick="editInline(this,'season')"><span class="field-label">🌿 Saison</span><span class="field-value">${Array.isArray(r.season) ? r.season.join(', ') : r.season}</span><span class="edit-icon">✏️</span></div>
+    </div>
+
+    <div class="fiche-section">
+      <div class="fiche-section-title">🛒 Ingrédients (pour 1 adulte référence)</div>
+      <div id="detail-ingredients">
+        ${ingredients.map((ing, i) => `
+          <div class="ingredient-edit-row" id="ing-row-${i}">
+            <input value="${ing.name}" placeholder="Ingrédient" onchange="updateIngredient('${id}',${i},'name',this.value)" />
+            <input class="qty-input" value="${ing.qty}" placeholder="Qtité" onchange="updateIngredient('${id}',${i},'qty',this.value)" />
+            <select class="store-select" onchange="updateIngredient('${id}',${i},'store',this.value)">
+              <option value="koro" ${ing.store === 'koro' ? 'selected' : ''}>🟡 Koro</option>
+              <option value="superu" ${ing.store === 'superu' ? 'selected' : ''}>🔴 Super U</option>
+            </select>
+            <button class="del-btn" onclick="removeIngredient('${id}',${i})">×</button>
+          </div>`).join('')}
+      </div>
+      <button class="add-ingredient-btn" onclick="addIngredient('${id}')">+ Ajouter un ingrédient</button>
+    </div>
+
+    <div class="fiche-section">
+      <div class="fiche-section-title">🍳 Étapes Batch (à faire le lundi)</div>
+      <div id="detail-batch">
+        ${batchSteps.map((step, i) => `
+          <div class="batch-step-edit">
+            <span style="width:20px;text-align:center;font-size:12px;color:var(--text-muted);padding-top:8px">${i + 1}</span>
+            <textarea onblur="updateBatchStep('${id}',${i},this.value)">${step}</textarea>
+            <button class="del-btn" onclick="removeBatchStep('${id}',${i})">×</button>
+          </div>`).join('')}
+      </div>
+      <button class="add-ingredient-btn" onclick="addBatchStep('${id}')">+ Ajouter une étape</button>
+    </div>
+
+    <div class="fiche-section">
+      <div class="fiche-section-title">✅ Finition Jour J</div>
+      <textarea class="form-input form-textarea" style="min-height:60px" onblur="saveField('${id}','finition',this.value)">${finition}</textarea>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-outline" style="flex:1" onclick="closeModal('modal-recipe')">Fermer</button>
+      <button class="btn btn-primary" style="flex:1" onclick="closeModal('modal-recipe');renderRecipes(filterActive)">✅ Sauvegarder</button>
+    </div>`;
+      document.getElementById('modal-recipe').classList.add('open');
+    }
+    function saveField(id, field, value) {
+      const r = RECIPES.find(r => r.id === id);
+      if (r) r[field] = value;
+    }
+    function updateIngredient(id, idx, field, value) {
+      const r = RECIPES.find(r => r.id === id);
+      if (r && r.ingredients) r.ingredients[idx][field] = value;
+    }
+    function removeIngredient(id, idx) {
+      const r = RECIPES.find(r => r.id === id);
+      if (r && r.ingredients) { r.ingredients.splice(idx, 1); openRecipeDetail(id); }
+    }
+    function addIngredient(id) {
+      const r = RECIPES.find(r => r.id === id);
+      if (!r.ingredients) r.ingredients = [];
+      r.ingredients.push({ name: '', qty: '', store: 'superu' });
+      openRecipeDetail(id);
+    }
+    function updateBatchStep(id, idx, value) {
+      const r = RECIPES.find(r => r.id === id);
+      if (r && r.batchSteps) r.batchSteps[idx] = value;
+    }
+    function removeBatchStep(id, idx) {
+      const r = RECIPES.find(r => r.id === id);
+      if (r && r.batchSteps) { r.batchSteps.splice(idx, 1); openRecipeDetail(id); }
+    }
+    function addBatchStep(id) {
+      const r = RECIPES.find(r => r.id === id);
+      if (!r.batchSteps) r.batchSteps = [];
+      r.batchSteps.push('Nouvelle étape...');
+      openRecipeDetail(id);
+    }
+    function editInline(el, field) {
+      const valEl = el.querySelector('.field-value');
+      const currentVal = valEl.textContent;
+      const input = document.createElement('input');
+      input.value = currentVal;
+      input.className = 'form-input';
+      input.style.cssText = 'padding:4px 8px;font-size:13px';
+      valEl.replaceWith(input);
+      input.focus();
+      el.querySelector('.edit-icon').style.display = 'none';
+      input.onblur = () => {
+        const span = document.createElement('span');
+        span.className = 'field-value';
+        span.textContent = input.value;
+        input.replaceWith(span);
+        el.querySelector('.edit-icon').style.display = '';
+      };
+    }
+
+    // ── COURSES ───────────────────────────────────────────────────────────────
+    function renderShopping() {
+      ['koro', 'superu'].forEach(shop => {
+        const container = document.getElementById(`${shop}-list`);
+        const countEl = document.getElementById(`${shop}-count`);
+        const data = SHOPPING[shop];
+        let total = 0;
+        container.innerHTML = Object.entries(data).map(([cat, items]) => {
+          total += items.length;
+          return `<div class="category-group">
+        <div class="category-label">${cat}</div>
+        ${items.map((item, idx) => {
+            const key = `${shop}-${cat}-${idx}`;
+            const done = checkedItems[key];
+            return `<div class="ingredient-row ${done ? 'checked' : ''}" id="row-${key}">
+            <input type="checkbox" ${done ? 'checked' : ''} onchange="toggleItem('${key}')">
+            <span class="ingredient-name">${item.name}</span>
+            <span class="ingredient-qty">${item.qty}</span>
+          </div>`;
+          }).join('')}
+      </div>`;
+        }).join('');
+        countEl.textContent = `${total} articles`;
+      });
+      renderOrderSummary();
+    }
+    function toggleItem(key) {
+      checkedItems[key] = !checkedItems[key];
+      const row = document.getElementById('row-' + key);
+      row.classList.toggle('checked', checkedItems[key]);
+    }
+    function renderOrderSummary() { renderOrderList(); } // alias kept for compatibility
+    function renderOrderList() {
+      ['koro', 'superu'].forEach(shop => {
+        const listEl = document.getElementById(`order-${shop}-list`);
+        const countEl = document.getElementById(`order-${shop}-count`);
+        if (!listEl) return;
+        const data = SHOPPING[shop];
+        let total = 0;
+        listEl.innerHTML = Object.entries(data).map(([cat, items]) => {
+          total += items.length;
+          return `<div class="category-group">
+            <div class="category-label">${cat}</div>
+            ${items.map((item, idx) => {
+            const key = `order-${shop}-${cat}-${idx}`;
+            const done = checkedItems[key];
+            return `<div class="ingredient-row ${done ? 'checked' : ''}" id="row-${key}">
+                <input type="checkbox" ${done ? 'checked' : ''} onchange="toggleItem('${key}')">
+                <span class="ingredient-name">${item.name}</span>
+                <input type="text" value="${item.qty}"
+                  style="width:80px;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:2px 6px;color:var(--text);font-size:12px;text-align:right;font-family:inherit"
+                  onchange="updateOrderQty('${shop}','${cat}',${idx},this.value)"
+                  onclick="event.stopPropagation()">
+                <button onclick="removeOrderItem('${shop}','${cat}',${idx})"
+                  style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:14px;padding:0 4px;transition:color .1s"
+                  onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text-muted)'">×</button>
+              </div>`;
+          }).join('')}
+          </div>`;
+        }).join('');
+        if (countEl) countEl.textContent = `${total} articles`;
+      });
+    }
+    function updateOrderQty(shop, cat, idx, val) {
+      if (SHOPPING[shop][cat] && SHOPPING[shop][cat][idx]) {
+        SHOPPING[shop][cat][idx].qty = val;
+      }
+    }
+    function removeOrderItem(shop, cat, idx) {
+      if (SHOPPING[shop][cat]) {
+        SHOPPING[shop][cat].splice(idx, 1);
+        renderOrderList();
+        renderShopping();
+      }
+    }
+    function addOrderItem(shop) {
+      const name = prompt('Nom de l\'article à ajouter ?');
+      if (!name) return;
+      const qty = prompt('Quantité ?', '1 unité');
+      if (!qty) return;
+      const cat = Object.keys(SHOPPING[shop])[0];
+      SHOPPING[shop][cat].push({ name, qty });
+      renderOrderList();
+      renderShopping();
+    }
+    function launchOrder(shop) {
+      const name = shop === 'koro' ? 'Koro' : 'Super U';
+      const url = shop === 'koro' ? 'https://www.koro.com/fr/' : 'https://www.courses.super-u.com/';
+      const items = Object.values(SHOPPING[shop]).flat().filter((_, i) => true);
+      const remaining = items.filter((item, idx) => {
+        const keys = Object.entries(SHOPPING[shop]).flatMap(([cat, arr]) => arr.map((_, i) => `order-${shop}-${cat}-${i}`));
+        return !checkedItems[keys[idx]];
+      });
+      alert(`🤖 Playwright va ouvrir ${name} et ajouter ${remaining.length} article(s) au panier.\n\nFonctionnalité disponible avec la clé API configurée et Playwright installé.\n\nURL : ${url}`);
+    }
+
+
+    // ── BATCH ─────────────────────────────────────────────────────────────────
+    function renderBatch() {
+      const container = document.getElementById('batch-steps');
+      const done = Object.values(completedSteps).filter(Boolean).length;
+      document.getElementById('batch-progress-text').textContent = `${done}/${BATCH_STEPS.length} étapes complétées`;
+      container.innerHTML = BATCH_STEPS.map((step, i) => {
+        const isDone = completedSteps[i];
+        const isRunning = activeTimers[i];
+        return `<div class="batch-step ${isDone ? 'done' : ''}" id="step-${i}">
+      <div class="step-num" style="${isDone ? 'background:var(--green-dim);color:var(--green)' : ''}">
+        ${isDone ? '✓' : (i + 1)}
+      </div>
+      <div class="step-info">
+        <div class="step-name">${step.time} — ${step.name}</div>
+        <div class="step-tech">Technique : ${step.tech}</div>
+      </div>
+      <span class="step-duration">${step.duration}</span>
+      <button class="timer-btn ${isRunning ? 'running' : ''}" onclick="toggleTimer(${i})">
+        ${isDone ? '✓ Fait' : isRunning ? '⏸ Pause' : '▶ Démarrer'}
+      </button>
+      ${!isDone ? `<button class="timer-btn" onclick="markDone(${i})" style="color:var(--green)">✓</button>` : ''}
+    </div>`;
+      }).join('');
+    }
+    function toggleTimer(i) {
+      activeTimers[i] = !activeTimers[i];
+      renderBatch();
+    }
+    function markDone(i) {
+      completedSteps[i] = true;
+      activeTimers[i] = false;
+      renderBatch();
+    }
+    function resetBatch() {
+      if (confirm('Réinitialiser toutes les étapes ?')) {
+        completedSteps = {}; activeTimers = {}; renderBatch();
+      }
+    }
+
+    // ── INIT ──────────────────────────────────────────────────────────────────
+    renderPlanning();
+    renderRecipes('all');
+    renderShopping();
+    renderBatch();
+  </script>
+</body>
+
+</html>
