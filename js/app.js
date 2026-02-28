@@ -345,4 +345,14 @@ document.querySelectorAll('.nav-item').forEach(btn => {
   btn.addEventListener('click', () => navigate(btn));
 });
 
+// Auto-génère un menu à la première visite (plan vide)
+if (Object.keys(weekPlan).length === 0) {
+  const menu = generateWeekMenu(currentRecipes);
+  const ws = getWeekStart(currentWeekOffset);
+  DAY_KEYS.forEach((dk, i) => {
+    if (menu[dk]) { const d = new Date(ws); d.setDate(ws.getDate() + i); weekPlan[d.toDateString()] = menu[dk]; }
+  });
+  Storage.savePlan(weekPlan);
+}
+
 renderPlanning(); renderRecipes('all'); renderShopping(); renderBatch();
