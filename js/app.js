@@ -279,12 +279,15 @@ function renderShopPanel(shop, listId, countId, editable = false) {
   }).join('') || '<div style="padding:16px;color:var(--text-muted);text-align:center;font-size:13px">Planifiez des repas pour voir la liste 📋</div>';
   if (countEl) countEl.textContent = `${total} articles`;
 }
-function renderShopping() {
-  shoppingData = buildShoppingData();
+function renderShoppingPanels() {
   renderShopPanel('koro',   'koro-list',         'koro-count');
   renderShopPanel('superu', 'superu-list',        'superu-count');
   renderShopPanel('koro',   'order-koro-list',   'order-koro-count',   true);
   renderShopPanel('superu', 'order-superu-list', 'order-superu-count', true);
+}
+function renderShopping() {
+  shoppingData = buildShoppingData();
+  renderShoppingPanels();
 }
 function toggleItem(key) {
   checkedItems[key] = !checkedItems[key]; Storage.saveCheckedItems(checkedItems);
@@ -292,13 +295,13 @@ function toggleItem(key) {
 }
 function renderOrderSummary() { renderShopping(); }
 function updateOrderQty(shop, cat, idx, val) { if(shoppingData[shop][cat]?.[idx]) shoppingData[shop][cat][idx].qty=val; }
-function removeOrderItem(shop, cat, idx) { if(shoppingData[shop][cat]){shoppingData[shop][cat].splice(idx,1);renderShopping();} }
+function removeOrderItem(shop, cat, idx) { if(shoppingData[shop][cat]){shoppingData[shop][cat].splice(idx,1);renderShoppingPanels();} }
 function addOrderItem(shop) {
   const name = prompt("Nom de l'article ?"); if(!name) return;
   const qty  = prompt('Quantité ?', '1 unité'); if(!qty) return;
   const cat  = Object.keys(shoppingData[shop])[0] || 'Divers';
   if(!shoppingData[shop][cat]) shoppingData[shop][cat]=[];
-  shoppingData[shop][cat].push({ name, qty }); renderShopping();
+  shoppingData[shop][cat].push({ name, qty }); renderShoppingPanels();
 }
 function launchOrder(shop) {
   const name = shop==='koro'?'Koro':'Super U';
